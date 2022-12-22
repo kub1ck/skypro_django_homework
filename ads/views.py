@@ -1,17 +1,12 @@
-import json
-
-from django.core.paginator import Paginator
-from django.db.models import Count, Q
 from django.http import JsonResponse
-from django.views import View
 
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 
-from ads.models import Ad, User, Location, Category
-from ads.serializers import AdSerializer, CategorySerializer, LocationSerializer, UserSerializer, UserCreateSerializer, \
-    UserUpdateSerializer
-from ads_dj import settings
+from ads.models import Ad, Category, Selection
+from ads.serializers import AdSerializer, CategorySerializer, SelectionSerializer
+
+from user.permissions import AdPermission
 
 
 def index(request):
@@ -52,6 +47,7 @@ class AdListView(ListAPIView):
 class AdDetailView(RetrieveAPIView):
     queryset = Ad.objects.all()
     serializer_class = AdSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class AdCreateView(CreateAPIView):
@@ -62,6 +58,7 @@ class AdCreateView(CreateAPIView):
 class AdUpdateView(UpdateAPIView):
     queryset = Ad.objects.all()
     serializer_class = AdSerializer
+    permission_classes = [IsAuthenticated, AdPermission]
 
 
 class AdImageView(UpdateAPIView):
@@ -72,6 +69,7 @@ class AdImageView(UpdateAPIView):
 class AdDeleteView(DestroyAPIView):
     queryset = Ad.objects.all()
     serializer_class = AdSerializer
+    permission_classes = [IsAuthenticated, AdPermission]
 
 
 """
@@ -105,73 +103,33 @@ class CategoryDeleteView(DestroyAPIView):
 
 
 """
-    LOCATION
+    SELECTION
 """
 
 
-class LocationViewSet(ModelViewSet):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializer
+class SelectionView(ListAPIView):
+    queryset = Selection.objects.all()
+    serializer_class = SelectionSerializer
 
 
-"""
-    USER
-"""
+class SelectionDetailView(RetrieveAPIView):
+    queryset = Selection.objects.all()
+    serializer_class = SelectionSerializer
 
 
-class UserListView(ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class SelectionCreateView(CreateAPIView):
+    queryset = Selection.objects.all()
+    serializer_class = SelectionSerializer
+    permission_classes = [IsAuthenticated]
 
 
-class UserDetailView(RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class SelectionUpdateView(UpdateAPIView):
+    queryset = Selection.objects.all()
+    serializer_class = SelectionSerializer
+    permission_classes = [IsAuthenticated]
 
 
-class UserCreateView(CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserCreateSerializer
-
-
-class UserUpdateView(UpdateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserUpdateSerializer
-
-
-class UserDeleteView(DestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class UserAdDetailView(View):
-    def get(self, request):
-        user_qs = User.objects\
-            .prefetch_related("locations")\
-            .annotate(total_ads=Count('ad', filter=Q(ad__is_published=True)))
-
-        paginator = Paginator(user_qs, settings.TOTAL_ON_PAGE)
-        page_number = request.GET.get('page', 1)
-        page_obj = paginator.get_page(page_number)
-
-        users = []
-
-        for user in page_obj:
-            users.append({
-                "id": user.id,
-                "username": user.username,
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-                "role": user.role,
-                "age": user.age,
-                "location": list(map(str, user.locations.all())),
-                "total_ads": user.total_ads
-            })
-
-        response = {
-            "items": users,
-            "total": paginator.count,
-            "num_pages": paginator.num_pages
-        }
-
-        return JsonResponse(response, safe=False)
+class SelectionDeleteView(DestroyAPIView):
+    queryset = Selection.objects.all()
+    serializer_class = SelectionSerializer
+    permission_classes = [IsAuthenticated]
