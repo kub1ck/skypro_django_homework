@@ -1,11 +1,7 @@
 from django.urls import path
-from rest_framework import routers
 
 from ads import views
-from ads.views import LocationViewSet
 
-router = routers.SimpleRouter()
-router.register('location', LocationViewSet)
 
 urlpatterns = [
     path('', views.index),
@@ -23,13 +19,11 @@ urlpatterns = [
     path('cat/<int:pk>/update/', views.CategoryUpdateView.as_view()),
     path('cat/<int:pk>/delete/', views.CategoryDeleteView.as_view()),
 
-    path('user/', views.UserListView.as_view()),
-    path('user/create/', views.UserCreateView.as_view()),
-    path('user/<int:pk>/', views.UserDetailView.as_view()),
-    path('user/<int:pk>/update/', views.UserUpdateView.as_view()),
-    path('user/<int:pk>/delete/', views.UserDeleteView.as_view()),
-
-    path('user/Z', views.UserAdDetailView.as_view())
+    path('selections/', views.SelectionView.as_view()),
+    path('selections/<int:pk>/', views.SelectionDetailView.as_view()),
+    path('selections/create/', views.SelectionCreateView.as_view()),
+    path('selections/<int:pk>/update/', views.SelectionUpdateView.as_view()),
+    path('selections/<int:pk>/del/', views.SelectionDeleteView.as_view()),
 ]
 
-urlpatterns += router.urls
+
