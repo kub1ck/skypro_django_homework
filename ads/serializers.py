@@ -19,8 +19,14 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class SelectionSerializer(serializers.ModelSerializer):
-    items = serializers.SlugRelatedField(read_only=True, slug_field='id')
-    owner = AdSerializer(many=True)
+    class Meta:
+        model = Selection
+        fields = ['id', 'name']
+
+
+class SelectionDetailSerializer(serializers.ModelSerializer):
+    items = AdSerializer(many=True)
+    owner = serializers.SlugRelatedField(read_only=True, slug_field='id')
 
     class Meta:
         model = Selection

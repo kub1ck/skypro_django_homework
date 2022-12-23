@@ -4,7 +4,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView,
 from rest_framework.permissions import IsAuthenticated
 
 from ads.models import Ad, Category, Selection
-from ads.serializers import AdSerializer, CategorySerializer, SelectionSerializer
+from ads.serializers import AdSerializer, CategorySerializer, SelectionSerializer, SelectionDetailSerializer
 
 from user.permissions import AdPermission
 
@@ -114,7 +114,7 @@ class SelectionView(ListAPIView):
 
 class SelectionDetailView(RetrieveAPIView):
     queryset = Selection.objects.all()
-    serializer_class = SelectionSerializer
+    serializer_class = SelectionDetailSerializer
 
 
 class SelectionCreateView(CreateAPIView):
