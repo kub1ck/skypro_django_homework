@@ -27,7 +27,7 @@ class User(AbstractUser):
     ]
 
     role = models.CharField(max_length=20, choices=ROLES, default=MEMBER)
-    age = models.SmallIntegerField()
+    age = models.SmallIntegerField(null=True)
     locations = models.ManyToManyField(Location)
 
     class Meta:
@@ -36,5 +36,3 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
-
-
