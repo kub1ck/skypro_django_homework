@@ -1,6 +1,10 @@
+from datetime import date
+
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from user.models import User, Location
+from user.validators import BirthDayValidator, EmailValidator
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -24,6 +28,10 @@ class UserCreateSerializer(serializers.ModelSerializer):
         slug_field='name',
         required=False,
     )
+
+    birth_date = serializers.DateField(validators=[BirthDayValidator(9)])
+    email = serializers.EmailField(validators=[EmailValidator(('rambler.ru',)),
+                                               UniqueValidator(queryset=User.objects.all())])
 
     class Meta:
         model = User
